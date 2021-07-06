@@ -6,13 +6,22 @@
 //
 
 #import "HomeFeedViewController.h"
-
+#import <Parse/Parse.h>
+#import "AppDelegate.h"
+#import "LoginViewController.h"
 @interface HomeFeedViewController ()
 
 @end
 
 @implementation HomeFeedViewController
-- (IBAction)logoutButton:(id)sender {
+
+- (IBAction)logoutButton:(id)sender{
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    LoginViewController *loginViewController = [storyboard instantiateViewControllerWithIdentifier:@"LoginViewController"];
+    [[UIApplication sharedApplication].keyWindow setRootViewController: loginViewController];
+    [PFUser logOutInBackgroundWithBlock:^(NSError * _Nullable error){
+        NSLog(@"User Logged out successfully!");
+    }];
     
 }
 
