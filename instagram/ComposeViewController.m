@@ -7,6 +7,7 @@
  
 #import "ComposeViewController.h"
 #import "HomeFeedViewController.h"
+#import "Post.h"
 
 @interface ComposeViewController () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextViewDelegate>
 
@@ -17,7 +18,22 @@
 - (IBAction)onClickCancel:(id)sender{
     [self dismissViewControllerAnimated:YES completion:nil];
 }
-- (IBAction)onClickShare:(id)sender {
+- (IBAction)onClickShare:(id)sender{
+
+    Post *post = [Post new];
+    post.postID = @"PostID";
+    post.userID = @"userID";
+
+    post.image = [Post getPFFileFromImage:[self resizeImage:self.postImage.image withSize: CGSizeMake(180, 180)]];
+    [post saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (succeeded) {
+            NSLog(@"The post has been saved!");
+        }
+        else {
+            NSLog(@"%@", error.localizedDescription);
+        }
+    }];
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<NSString *,id> *)info {
@@ -26,7 +42,7 @@
     UIImage *originalImage = info[UIImagePickerControllerOriginalImage];
     UIImage *editedImage = info[UIImagePickerControllerEditedImage];
     
-    self.postImage.image = originalImage;
+    self.postImage.image = editedImage;
  
     // Do something with the images (based on your use case)
     
@@ -66,8 +82,22 @@
 - (void)textViewDidEndEditing:(UITextView *)textView{
     if([self.captionTextField.text isEqual:@""]){
         self.captionTextField.text = @"Add a caption...";
-        self.captionTextField.textColor = [UIColor grayColor];
+        self.captionTextField.textColor = [UIColor secondaryLabelColor];
     }
+}
+
+- (UIImage *)resizeImage:(UIImage *)image withSize:(CGSize)size {
+    UIImageView *resizeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, size.width, size.height)];
+    
+    resizeImageView.contentMode = UIViewContentModeScaleAspectFill;
+    resizeImageView.image = image;
+    
+    UIGraphicsBeginImageContext(size);
+    [resizeImageView.layer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return newImage;
 }
 
 - (void)textBoxOptions{
