@@ -41,7 +41,7 @@
         }
     }];
 }
-
+ 
 - (void)loginUser {
     NSString *username = self.usernameField.text;
     NSString *password = self.passwordField.text;
@@ -106,6 +106,9 @@
         }];
     }
     [self loginUser];
+}
+- (IBAction)onTap:(id)sender {
+    [self.view endEditing:true];
 }
 
 - (void)viewDidLoad {
