@@ -23,6 +23,8 @@
     Post *post = [Post new];
     post.postID = @"PostID";
     post.userID = @"userID";
+    post.author = PFUser.currentUser;
+    post.caption = self.captionTextField.text;
 
     post.image = [Post getPFFileFromImage:[self resizeImage:self.postImage.image withSize: CGSizeMake(180, 180)]];
     [post saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
@@ -44,9 +46,6 @@
     
     self.postImage.image = editedImage;
  
-    // Do something with the images (based on your use case)
-    
-    // Dismiss UIImagePickerController to go back to your original view controller
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 

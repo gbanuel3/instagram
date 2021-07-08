@@ -10,9 +10,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface HomeFeedViewController : UIViewController
+
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *logoutButton;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *postButton;
-//@property ()
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (strong, nonatomic) NSArray *arrayOfPosts;
+
 @end
 
 NS_ASSUME_NONNULL_END
