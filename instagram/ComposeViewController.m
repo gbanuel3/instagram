@@ -19,22 +19,8 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 - (IBAction)onClickShare:(id)sender{
+    [Post postUserImage:[self resizeImage:self.postImage.image withSize: CGSizeMake(180, 180)] withCaption:self.captionTextField.text withCompletion:nil];
 
-    Post *post = [Post new];
-    post.postID = @"PostID";
-    post.userID = @"userID";
-    post.author = PFUser.currentUser;
-    post.caption = self.captionTextField.text;
-
-    post.image = [Post getPFFileFromImage:[self resizeImage:self.postImage.image withSize: CGSizeMake(180, 180)]];
-    [post saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        if (succeeded) {
-            NSLog(@"The post has been saved!");
-        }
-        else {
-            NSLog(@"%@", error.localizedDescription);
-        }
-    }];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -45,8 +31,15 @@
     UIImage *editedImage = info[UIImagePickerControllerEditedImage];
     
     self.postImage.image = editedImage;
- 
+
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)view:(BOOL)animated{
+    NSLog(@"View Did Appear!");
+    if([self.postImage.image isEqual:nil]){
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }
 }
 
 - (void)initiateCamera{
@@ -118,7 +111,6 @@
     [super viewDidLoad];
     self.captionTextField.delegate = self;
     [self textBoxOptions];
-    
     [self initiateCamera];
     
     // Do any additional setup after loading the view.

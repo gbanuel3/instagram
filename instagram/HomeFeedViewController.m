@@ -12,8 +12,10 @@
 #import "ComposeViewController.h"
 #import "PostCell.h"
 #import "Post.h"
+#import "DetailViewController.h"
+#import "DateTools.h"
 @interface HomeFeedViewController () <UITableViewDelegate, UITableViewDataSource>
-
+@property (nonatomic, strong) UIRefreshControl *refreshControl;
 @end
 
 @implementation HomeFeedViewController
@@ -33,11 +35,12 @@
 
 }
 
-- (void)onTimer {
+- (void)onTimer{
     PFQuery *query = [PFQuery queryWithClassName:@"Post"];
     [query includeKey:@"author"];
     [query includeKey:@"caption"];
     [query includeKey:@"image"];
+    [query includeKey:@"date"];
     [query orderByDescending:@"createdAt"];
     
     query.limit = 20;
@@ -50,6 +53,7 @@
         } else {
             NSLog(@"%@", error.localizedDescription);
         }
+        [self.refreshControl endRefreshing];
     }];
 }
 
@@ -59,7 +63,12 @@
     self.tableView.delegate = self;
     
     [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(onTimer) userInfo:nil repeats:true];
-    // Do any additional setup after loading the view.
+    
+    self.refreshControl = [[UIRefreshControl alloc] init];
+    [self.refreshControl addTarget:self action:@selector(onTimer) forControlEvents:UIControlEventValueChanged];
+    [self.tableView addSubview:self.refreshControl];
+    
+
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -71,7 +80,7 @@
     PostCell *cell = [tableView dequeueReusableCellWithIdentifier:@"PostCell"];
 
     Post *post = self.arrayOfPosts[indexPath.row];
-//    cell.postImage.image = post[@"image"];
+
     [post[@"image"] getDataInBackgroundWithBlock:^(NSData *imageData, NSError *error) {
         if (!error) {
             cell.postImage.image = nil;
@@ -82,7 +91,10 @@
     }];
     cell.captionLabel.text = post[@"caption"];
     cell.userLabel.text = post[@"author"][@"username"];
-//    NSLog(@"%@", post[@"image"]);
+    
+    NSDate *timeAgo = post[@"date"];
+    cell.timeAgoLabel.text = timeAgo.shortTimeAgoSinceNow;
+
     return cell;
 }
 
@@ -90,11 +102,18 @@
 
 #pragma mark - Navigation
  
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-//- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-//
-//    }
-//}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    if([[segue identifier] isEqualToString:@"cellSelectedSegue"]){
+        PostCell *tappedCell = sender;
+        NSIndexPath *indexPath = [self.tableView indexPathForCell:tappedCell];
+        Post *post = self.arrayOfPosts[indexPath.row];
+        DetailViewController *detailViewController = [segue destinationViewController];
+        detailViewController.post = post;
+        return;
+    }
+}
+
 
 
 @end
