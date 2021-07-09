@@ -19,6 +19,7 @@
     
     newUser.username = self.usernameField.text;
     newUser.password = self.passwordField.text;
+
     
     // call sign up function on the object
     [newUser signUpInBackgroundWithBlock:^(BOOL succeeded, NSError * error) {
@@ -36,10 +37,14 @@
             }];
         } else {
             NSLog(@"User registered successfully");
-            
+            PFUser *user = [PFUser currentUser];
+            NSMutableArray *emptyArray = [[NSMutableArray alloc] init];
+            [user setObject:emptyArray forKey:@"posts"];
+            [user saveInBackground];
             [self performSegueWithIdentifier:@"loginSegue" sender:self.loginButton];
         }
     }];
+
 }
  
 - (void)loginUser {

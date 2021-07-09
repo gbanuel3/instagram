@@ -14,10 +14,11 @@
 #import "Post.h"
 #import "DetailViewController.h"
 #import "DateTools.h"
+#import "ProfileViewController.h"
 
-@interface HomeFeedViewController () <UITableViewDelegate, UITableViewDataSource>
+@interface HomeFeedViewController () <UITableViewDelegate, UITableViewDataSource, PostCellDelegate>
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
-@property (nonatomic, strong) NSNumber *count;
+@property int count;
 @end
 
 @implementation HomeFeedViewController
@@ -37,7 +38,10 @@
 
 }
 
-
+- (void)PostCell:(PostCell *)postCell didTap:(Post *)post {
+    NSLog(@"Hello World");
+    [self performSegueWithIdentifier:@"profileSegue" sender:post];
+}
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.arrayOfPosts.count;
@@ -49,6 +53,7 @@
 
 
 - (void)onTimer{
+
     PFQuery *query = [PFQuery queryWithClassName:@"Post"];
     [query includeKey:@"author"];
     [query includeKey:@"caption"];
@@ -56,7 +61,7 @@
     [query includeKey:@"date"];
     [query orderByDescending:@"createdAt"];
     
-    query.limit = 20;
+    query.limit = self.count;
 
     // fetch data asynchronously
     [query findObjectsInBackgroundWithBlock:^(NSArray *posts, NSError *error) {
@@ -72,10 +77,11 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
-    
-    [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(onTimer) userInfo:nil repeats:true];
+    self.count = 20;
+    [NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(onTimer) userInfo:nil repeats:true];
 
     
     self.refreshControl = [[UIRefreshControl alloc] init];
@@ -85,10 +91,17 @@
 
 }
 
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
+    if(indexPath.row + 1 == [self.arrayOfPosts count]){
+        self.count = self.count + 20;
+        [self onTimer];
+    }
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
 
     PostCell *cell = [tableView dequeueReusableCellWithIdentifier:@"PostCell" forIndexPath:indexPath];
-
+    cell.delegate = self;
     Post *post = self.arrayOfPosts[indexPath.row];
 
     [post[@"image"] getDataInBackgroundWithBlock:^(NSData *imageData, NSError *error) {
@@ -104,7 +117,7 @@
     
     NSDate *timeAgo = post[@"date"];
     cell.timeAgoLabel.text = timeAgo.shortTimeAgoSinceNow;
-
+    cell.post = post;
     return cell;
 }
 
@@ -120,6 +133,13 @@
         Post *post = self.arrayOfPosts[indexPath.row];
         DetailViewController *detailViewController = [segue destinationViewController];
         detailViewController.post = post;
+        return;
+    }
+    if([[segue identifier] isEqualToString:@"profileSegue"]){
+        Post *clickedPost = sender;
+        
+        ProfileViewController *profileViewController = [segue destinationViewController];
+        profileViewController.post = clickedPost;
         return;
     }
 }

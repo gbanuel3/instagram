@@ -25,7 +25,7 @@
      
     NSDateFormatter *DateFormatter=[[NSDateFormatter alloc] init];
     [DateFormatter setDateFormat:@"EEE MMM dd hh:mm:ss yyyy"];
-    
+        
     Post *newPost = [Post new];
     newPost.image = [self getPFFileFromImage:image];
     newPost.author = [PFUser currentUser];
@@ -33,8 +33,30 @@
     newPost.likeCount = @(0);
     newPost.commentCount = @(0);
     newPost.date = [NSDate date];
+    newPost.userID = PFUser.currentUser[@"username"];
     
-    [newPost saveInBackgroundWithBlock: completion];
+//    PFUser *user = [PFUser currentUser];
+//    NSMutableArray *existingPosts = PFUser.currentUser[@"posts"];
+//    NSLog(@"%@", existingPosts);
+//    [existingPosts insertObject:newPost atIndex:existingPosts.count];
+//    [user setObject:existingPosts forKey:@"posts"];
+//    [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+//        if(error){
+//            NSLog(@"Error Here");
+//        }else{
+//            NSLog(@"Successfully saved post to user");
+//        }
+//    }];
+
+    [newPost saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if(error){
+            NSLog(@"Error Here in saving post to DB!");
+        }else{
+            NSLog(@"Successfully saved post to DB!");
+        }
+    }];
+    
+
 }
 
 + (PFFileObject *)getPFFileFromImage: (UIImage * _Nullable)image {
