@@ -15,8 +15,29 @@
 
 @implementation ProfileViewController
 
-- (void)onTimer{
 
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    
+//    [NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(onTimer) userInfo:nil repeats:true];
+    
+    self.userNameLabel.text = PFUser.currentUser[@"username"];
+    
+}
+- (void)viewDidAppear:(BOOL)animated{
+    if(PFUser.currentUser[@"profile_picture"]){
+//        NSLog(@"%@", PFUser.currentUser[@"profilePicture"]);
+        [PFUser.currentUser[@"profile_picture"] getDataInBackgroundWithBlock:^(NSData *imageData, NSError *error) {
+            if (!error) {
+                self.profilePictureImage.image = [UIImage imageWithData:imageData];
+                NSLog(@"PFP UPDATED");
+            }
+        }];
+    }
+    
+    
     PFQuery *query = [PFQuery queryWithClassName:@"Post"];
     [query whereKey:@"userID" equalTo:PFUser.currentUser[@"username"]];
     [query includeKey:@"author"];
@@ -36,28 +57,6 @@
             NSLog(@"%@", error.localizedDescription);
         }
     }];
-}
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    self.tableView.delegate = self;
-    self.tableView.dataSource = self;
-    
-    [NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(onTimer) userInfo:nil repeats:true];
-    
-    self.userNameLabel.text = PFUser.currentUser[@"username"];
-    
-}
-- (void)viewDidAppear:(BOOL)animated{
-    if(PFUser.currentUser[@"profilePicture"]){
-        NSLog(@"%@", PFUser.currentUser[@"profilePicture"]);
-        [PFUser.currentUser[@"profilePicture"] getDataInBackgroundWithBlock:^(NSData *imageData, NSError *error) {
-            if (!error) {
-                self.profilePictureImage.image = [UIImage imageWithData:imageData];
-                NSLog(@"PFP UPDATED");
-            }
-        }];
-    }
 }
 - (IBAction)onClickCamera:(id)sender {
     UIImagePickerController *imagePickerVC = [UIImagePickerController new];
@@ -96,10 +95,13 @@
     UIImage *editedImage = info[UIImagePickerControllerEditedImage];
 
     self.profilePictureImage.image = originalImage;
-    PFFileObject *imageFile = [Post getPFFileFromImage:[self resizeImage:originalImage withSize: CGSizeMake(180, 180)]];
-    [imageFile saveInBackground];
+//    PFFileObject *imageFile = [Post getPFFileFromImage:[self resizeImage:originalImage withSize: CGSizeMake(180, 180)]];
+//    [imageFile saveInBackground];
     PFUser *user = [PFUser currentUser];
-    [user setObject:imageFile forKey:@"profilePicture"];
+//    [user setObject:imageFile forKey:@"profilePicture"];
+    NSData * imageData = UIImagePNGRepresentation(editedImage);
+            PFObject * image = [PFFileObject fileObjectWithName:@"image.png" data:imageData];
+            user[@"profile_picture"] = image;
     [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if(!error){
             NSLog(@"Saved PFP success!");
@@ -107,9 +109,9 @@
             NSLog(@"FAILURE");
         }
     }];
+
     [self dismissViewControllerAnimated:YES completion:nil];
 
-\
 }
 
 /*

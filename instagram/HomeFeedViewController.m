@@ -21,16 +21,20 @@
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property int count;
 @property PFFileObject *pfImage;
+@property NSMutableArray *arrayOfPFP;
 @end
 
 @implementation HomeFeedViewController
 
+
+
 - (IBAction)logoutButton:(id)sender{
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    LoginViewController *loginViewController = [storyboard instantiateViewControllerWithIdentifier:@"LoginViewController"];
-    [[UIApplication sharedApplication].keyWindow setRootViewController: loginViewController];
+
     [PFUser logOutInBackgroundWithBlock:^(NSError * _Nullable error){
         NSLog(@"User Logged out successfully!");
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+        LoginViewController *loginViewController = [storyboard instantiateViewControllerWithIdentifier:@"LoginViewController"];
+        [[UIApplication sharedApplication].keyWindow setRootViewController: loginViewController];
     }];
     
 }
@@ -41,8 +45,8 @@
 }
 
 - (void)PostCell:(PostCell *)postCell didTap:(Post *)post {
-    NSLog(@"Hello World");
-    [self performSegueWithIdentifier:@"profileSegue" sender:post];
+//    NSLog(@"Hello World");
+    [self performSegueWithIdentifier:@"UserProfileSegue" sender:post];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -77,6 +81,7 @@
         [self.activityIndicator stopAnimating];
         [self.refreshControl endRefreshing];
     }];
+    
 }
 - (void)viewDidAppear:(BOOL)animated{
     [self onTimer];
@@ -125,31 +130,22 @@
             cell.postImage.image = nil;
         }
     }];
-    cell.captionLabel.text = post[@"caption"];
-    cell.userLabel.text = post[@"author"][@"username"];
-//    NSLog(@"%@", post[@"usrPFP"]);
-    
-    PFQuery *query = [PFQuery queryWithClassName:@"_User"];
-    [query whereKey:@"username" equalTo:post[@"author"][@"username"]];
-
-    query.limit = 1;
-    [query findObjectsInBackgroundWithBlock:^(NSArray *posts, NSError *error) {
-        if(!error){
-//            NSLog(@"%@", posts);
-            self.pfImage = posts[0][@"profilePicture"];
-            
-        } else {
-            NSLog(@"%@", error.localizedDescription);
-        }
-    }];
-
-    [self.pfImage getDataInBackgroundWithBlock:^(NSData *imageData, NSError *error) {
+    [post[@"author"][@"profile_picture"] getDataInBackgroundWithBlock:^(NSData *imageData, NSError *error) {
         if (!error) {
             cell.pfpImage.image = nil;
             cell.pfpImage.image = [UIImage imageWithData:imageData];
-            NSLog(@"PFP SHOULD BE SHOWING!");
+        }else{
+            cell.pfpImage.image = nil;
         }
     }];
+    cell.captionLabel.text = post[@"caption"];
+    cell.userLabel.text = post[@"author"][@"username"];
+//    NSLog(@"%@",self.arrayOfPFP);
+//    [self.arrayOfPFP[indexPath.row] getDataInBackgroundWithBlock:^(NSData *imageData, NSError *error) {
+//        if (!error) {
+//            cell.pfpImage.image = [UIImage imageWithData:imageData];
+//        }
+//    }];
     NSDate *timeAgo = post[@"date"];
     cell.timeAgoLabel.text = timeAgo.shortTimeAgoSinceNow;
     cell.post = post;
@@ -171,6 +167,13 @@
         return;
     }
     if([[segue identifier] isEqualToString:@"profileSegue"]){
+        Post *clickedPost = sender;
+        
+        ProfileViewController *profileViewController = [segue destinationViewController];
+        profileViewController.post = clickedPost;
+        return;
+    }
+    if([[segue identifier] isEqualToString:@"UserProfileSegue"]){
         Post *clickedPost = sender;
         
         ProfileViewController *profileViewController = [segue destinationViewController];

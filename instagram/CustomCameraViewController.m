@@ -50,6 +50,13 @@
         [self setupLivePreview];
     }
 }
+- (IBAction)onClickCancel:(id)sender {
+    NSLog(@"Hello World");
+//    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+//    UIViewController *chatNavigationController = [storyboard instantiateViewControllerWithIdentifier:@"MainTabBarController"];
+//    self.window.rootViewController = chatNavigationController;
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
 - (void)setupLivePreview {
     
     self.videoPreviewLayer = [AVCaptureVideoPreviewLayer layerWithSession:self.captureSession];

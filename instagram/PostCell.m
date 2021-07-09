@@ -13,8 +13,14 @@
 - (void)awakeFromNib {
     [super awakeFromNib];
     UITapGestureRecognizer *profileTapGestureRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(didTapUserProfile:)];
-    [self.userLabel addGestureRecognizer:profileTapGestureRecognizer];
+    UITapGestureRecognizer *profileTapGestureRecognizer2 = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(didTapUserProfile:)];
+    [self.pfpImage addGestureRecognizer:profileTapGestureRecognizer];
+    [self.pfpImage setUserInteractionEnabled:YES];
+    
+    [self.userLabel addGestureRecognizer:profileTapGestureRecognizer2];
     [self.userLabel setUserInteractionEnabled:YES];
+    
+
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {

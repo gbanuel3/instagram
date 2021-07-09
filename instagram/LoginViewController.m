@@ -118,6 +118,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    NSLog(@"login");
     // Do any additional setup after loading the view.
 }
 

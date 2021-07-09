@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UIView *previewView;
 @property (weak, nonatomic) IBOutlet UIImageView *captureImageView;
 @property (weak, nonatomic) IBOutlet UIButton *didTakePhoto;
-
+@property (strong, nonatomic) UIWindow * window;
 @end
 
 NS_ASSUME_NONNULL_END

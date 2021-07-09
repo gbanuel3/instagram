@@ -34,7 +34,7 @@
     newPost.commentCount = @(0);
     newPost.date = [NSDate date];
     newPost.userID = PFUser.currentUser[@"username"];
-    newPost.usrPFP = PFUser.currentUser[@"profilePicture"];
+    newPost.usrPFP = PFUser.currentUser[@"profile_picture"];
     
 //    PFUser *user = [PFUser currentUser];
 //    NSMutableArray *existingPosts = PFUser.currentUser[@"posts"];
