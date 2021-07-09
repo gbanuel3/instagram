@@ -16,6 +16,7 @@
 #import "DateTools.h"
 #import "ProfileViewController.h"
 #import "QuartzCore/QuartzCore.h"
+#import "UserViewController.h"
 
 @interface HomeFeedViewController () <UITableViewDelegate, UITableViewDataSource, PostCellDelegate>
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
@@ -176,8 +177,8 @@
     if([[segue identifier] isEqualToString:@"UserProfileSegue"]){
         Post *clickedPost = sender;
         
-        ProfileViewController *profileViewController = [segue destinationViewController];
-        profileViewController.post = clickedPost;
+        UserViewController *userViewController = [segue destinationViewController];
+        userViewController.post = clickedPost;
         return;
     }
 }
