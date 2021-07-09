@@ -130,7 +130,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Caption goes here" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yh8-Iq-9i2">
-                                                    <rect key="frame" x="20" y="512" width="186" height="53"/>
+                                                    <rect key="frame" x="20" y="512" width="374" height="53"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
@@ -141,7 +141,7 @@
                                         <connections>
                                             <outlet property="captionLabel" destination="yh8-Iq-9i2" id="2R7-MB-TBJ"/>
                                             <outlet property="postImage" destination="ZVa-Cv-dsg" id="HL4-sU-g92"/>
-                                            <outlet property="timeAgoLabel" destination="2e3-xy-wZ9" id="ccl-gw-ax5"/>
+                                            <outlet property="timeAgoLabel" destination="2e3-xy-wZ9" id="eI9-oG-dV8"/>
                                             <outlet property="userLabel" destination="eEw-fe-UkC" id="z56-rF-ugT"/>
                                             <segue destination="ZGK-Fr-yIp" kind="show" identifier="cellSelectedSegue" id="jjH-Xa-G6H"/>
                                         </connections>

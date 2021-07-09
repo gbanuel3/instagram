@@ -14,8 +14,10 @@
 #import "Post.h"
 #import "DetailViewController.h"
 #import "DateTools.h"
+
 @interface HomeFeedViewController () <UITableViewDelegate, UITableViewDataSource>
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
+@property (nonatomic, strong) NSNumber *count;
 @end
 
 @implementation HomeFeedViewController
@@ -34,6 +36,17 @@
     [self performSegueWithIdentifier:@"postSegue" sender:self.postButton];
 
 }
+
+
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return self.arrayOfPosts.count;
+}
+
+
+
+
+
 
 - (void)onTimer{
     PFQuery *query = [PFQuery queryWithClassName:@"Post"];
@@ -63,6 +76,7 @@
     self.tableView.delegate = self;
     
     [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(onTimer) userInfo:nil repeats:true];
+
     
     self.refreshControl = [[UIRefreshControl alloc] init];
     [self.refreshControl addTarget:self action:@selector(onTimer) forControlEvents:UIControlEventValueChanged];
@@ -71,13 +85,9 @@
 
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
 
-    return self.arrayOfPosts.count;
-}
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-
-    PostCell *cell = [tableView dequeueReusableCellWithIdentifier:@"PostCell"];
+    PostCell *cell = [tableView dequeueReusableCellWithIdentifier:@"PostCell" forIndexPath:indexPath];
 
     Post *post = self.arrayOfPosts[indexPath.row];
 
