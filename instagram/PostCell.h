@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UILabel *userLabel;
 @property (weak, nonatomic) IBOutlet UILabel *timeAgoLabel;
 @property (strong, nonatomic) Post *post;
+@property (weak, nonatomic) IBOutlet UIImageView *pfpImage;
 
 
 @end

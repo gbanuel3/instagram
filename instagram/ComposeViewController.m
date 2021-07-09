@@ -8,6 +8,7 @@
 #import "ComposeViewController.h"
 #import "HomeFeedViewController.h"
 #import "Post.h"
+#import <QuartzCore/QuartzCore.h>
 
 @interface ComposeViewController () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextViewDelegate>
 
@@ -112,6 +113,7 @@
     self.captionTextField.delegate = self;
     [self textBoxOptions];
     [self initiateCamera];
+
     
     // Do any additional setup after loading the view.
 }

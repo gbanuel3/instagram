@@ -15,10 +15,12 @@
 #import "DetailViewController.h"
 #import "DateTools.h"
 #import "ProfileViewController.h"
+#import "QuartzCore/QuartzCore.h"
 
 @interface HomeFeedViewController () <UITableViewDelegate, UITableViewDataSource, PostCellDelegate>
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property int count;
+@property PFFileObject *pfImage;
 @end
 
 @implementation HomeFeedViewController
@@ -53,12 +55,13 @@
 
 
 - (void)onTimer{
-
+    [self.activityIndicator startAnimating];
     PFQuery *query = [PFQuery queryWithClassName:@"Post"];
     [query includeKey:@"author"];
     [query includeKey:@"caption"];
     [query includeKey:@"image"];
     [query includeKey:@"date"];
+    [query includeKey:@"usrPFP"];
     [query orderByDescending:@"createdAt"];
     
     query.limit = self.count;
@@ -71,17 +74,27 @@
         } else {
             NSLog(@"%@", error.localizedDescription);
         }
+        [self.activityIndicator stopAnimating];
         [self.refreshControl endRefreshing];
     }];
 }
-
+- (void)viewDidAppear:(BOOL)animated{
+    [self onTimer];
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
     
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
     self.count = 20;
-    [NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(onTimer) userInfo:nil repeats:true];
+    
+
+
+    
+    [self onTimer];
+
+    [self.tableView reloadData];
+    [NSTimer scheduledTimerWithTimeInterval:60 target:self selector:@selector(onTimer) userInfo:nil repeats:true];
 
     
     self.refreshControl = [[UIRefreshControl alloc] init];
@@ -114,7 +127,29 @@
     }];
     cell.captionLabel.text = post[@"caption"];
     cell.userLabel.text = post[@"author"][@"username"];
+//    NSLog(@"%@", post[@"usrPFP"]);
     
+    PFQuery *query = [PFQuery queryWithClassName:@"_User"];
+    [query whereKey:@"username" equalTo:post[@"author"][@"username"]];
+
+    query.limit = 1;
+    [query findObjectsInBackgroundWithBlock:^(NSArray *posts, NSError *error) {
+        if(!error){
+//            NSLog(@"%@", posts);
+            self.pfImage = posts[0][@"profilePicture"];
+            
+        } else {
+            NSLog(@"%@", error.localizedDescription);
+        }
+    }];
+
+    [self.pfImage getDataInBackgroundWithBlock:^(NSData *imageData, NSError *error) {
+        if (!error) {
+            cell.pfpImage.image = nil;
+            cell.pfpImage.image = [UIImage imageWithData:imageData];
+            NSLog(@"PFP SHOULD BE SHOWING!");
+        }
+    }];
     NSDate *timeAgo = post[@"date"];
     cell.timeAgoLabel.text = timeAgo.shortTimeAgoSinceNow;
     cell.post = post;

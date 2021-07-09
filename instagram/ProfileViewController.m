@@ -45,7 +45,7 @@
     
     [NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(onTimer) userInfo:nil repeats:true];
     
-    self.userNameLabel.text = self.post.author[@"username"];
+    self.userNameLabel.text = PFUser.currentUser[@"username"];
     
 }
 - (void)viewDidAppear:(BOOL)animated{
